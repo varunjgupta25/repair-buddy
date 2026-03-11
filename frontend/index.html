@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repair Buddy – On-Demand Home Repair & Appliance Booking</title>
+
+  <!-- FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700&display=swap">
+
+  <!-- CDN LIBRARIES -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.4/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.3.0/tsparticles.bundle.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- YOUR STYLESHEET -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- FILM GRAIN -->
+  <div id="film-grain"></div>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="cur-dot"></div>
+  <div id="cur-ring"></div>
+
+  <!-- BURST CANVAS -->
+  <canvas id="burst-canvas"></canvas>
+
+  <!-- SCROLL PROGRESS -->
+  <div id="sprogress"></div>
+
+  <!-- TSPARTICLES -->
+  <div id="tsparticles" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></div>
+
+  <!-- AUDIO TOGGLE -->
+  <div id="audio-toggle">🔇</div>
+
+  <!-- DEV RESET (hover bottom-right to reveal) -->
+  <button id="dev-reset" onclick="devReset()">⚠ RESET</button>
+
+  <!-- ================================================
+     NAV
+================================================ -->
+  <nav id="main-nav">
+    <div class="nav-logo">Repair<span>Buddy</span></div>
+    <ul class="nav-links">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#booking">Book</a></li>
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+    </ul>
+    <button class="nav-cta" onclick="navScrollTo('#booking')">🔧 Book Repair</button>
+  </nav>
+
+  <!-- ================================================
+     SECTION 1 – HERO
+================================================ -->
+  <section id="hero">
+    <canvas id="hero-canvas"></canvas>
+
+    <!-- Ambient glows -->
+    <div
+      style="position:absolute;width:600px;height:600px;background:rgba(249,115,22,.06);border-radius:50%;top:-200px;left:-200px;filter:blur(100px);pointer-events:none;">
+    </div>
+    <div
+      style="position:absolute;width:500px;height:500px;background:rgba(14,165,233,.04);border-radius:50%;bottom:-100px;right:-100px;filter:blur(100px);pointer-events:none;">
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">⚡ India's #1 On-Demand Repair Platform</div>
+      <h1 class="hero-h1" id="hero-h1">
+        Your Home Deserves<br><span class="orange">Expert Care.</span><br>
+        In <span class="blue">Minutes</span>, Not Days.
+      </h1>
+      <p class="hero-problem">
+        Finding reliable repair technicians for home appliances, plumbing, and electrical issues is slow, unorganized,
+        and stressful. Homeowners waste hours calling strangers with no way to track who is coming, when they will
+        arrive, or how much it will cost. Repair Buddy solves this by connecting customers instantly with verified local
+        technicians – with live tracking, upfront pricing, and seamless payments.
+      </p>
+      <div class="hero-btns">
+        <button class="btn-orange" onclick="navScrollTo('#booking')">🔧 Book a Repair Now</button>
+        <button class="btn-outline" onclick="navScrollTo('#dashboard')">📊 Live Dashboard</button>
+      </div>
+      <div class="hero-counters">
+        <div class="hcount">
+          <div class="hcount-num"><span id="c1">0</span><span class="unit">+</span></div>
+          <div class="hcount-lbl">Repairs Completed</div>
+        </div>
+        <div class="hcount">
+          <div class="hcount-num"><span id="c2">0</span><span class="unit">★</span></div>
+          <div class="hcount-lbl">Average Rating</div>
+        </div>
+        <div class="hcount">
+          <div class="hcount-num"><span>&lt;</span><span>30</span><span class="unit">min</span></div>
+          <div class="hcount-lbl">Response Time</div>
+        </div>
+        <div class="hcount">
+          <div class="hcount-num"><span id="c4">0</span><span class="unit">+</span></div>
+          <div class="hcount-lbl">Verified Technicians</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-ind">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 2 – THE PROBLEM
+================================================ -->
+  <section id="problem">
+    <div class="prob-inner">
+      <span class="section-badge">⚠ The Problem</span>
+      <h2 class="section-h2">
+        Home Repairs Are<br>
+        <span class="glitch-word" data-t="Broken.">Broken.</span>
+      </h2>
+      <div class="pain-icons">
+        <div class="pain-icon"><span class="icon-big">❄️</span>
+          <p>AC Failure</p>
+        </div>
+        <div class="pain-icon"><span class="icon-big">🔧</span>
+          <p>No Technician</p>
+        </div>
+        <div class="pain-icon"><span class="icon-big">💧</span>
+          <p>Leaking Pipes</p>
+        </div>
+        <div class="pain-icon"><span class="icon-big">⚡</span>
+          <p>Electrical Risk</p>
+        </div>
+        <div class="pain-icon"><span class="icon-big">⏰</span>
+          <p>Days of Waiting</p>
+        </div>
+      </div>
+      <div class="prob-split">
+        <div class="prob-box bad">
+          <div class="prob-box-title">❌ Without Repair Buddy</div>
+          <div class="prob-item"><span class="prob-icon">😤</span><span>Calling <span class="glitch-word"
+                data-t="strangers">strangers</span> with no verification</span></div>
+          <div class="prob-item"><span class="prob-icon">⏳</span><span><span class="glitch-word"
+                data-t="Slow">Slow</span> response – waiting days for a callback</span></div>
+          <div class="prob-item"><span class="prob-icon">💸</span><span><span class="glitch-word"
+                data-t="Unorganized">Unorganized</span> pricing, surprise charges</span></div>
+          <div class="prob-item"><span class="prob-icon">🤷</span><span>No tracking, no ETA, no accountability</span>
+          </div>
+          <div class="prob-item"><span class="prob-icon">🔄</span><span>No invoice, no warranty, no recourse</span>
+          </div>
+        </div>
+        <div class="prob-box good">
+          <div class="prob-box-title">✅ With Repair Buddy</div>
+          <div class="prob-item"><span class="prob-icon">🛡️</span><span>100% verified technicians with ID + skills
+              check</span></div>
+          <div class="prob-item"><span class="prob-icon">⚡</span><span>Technician arrives in under 30 minutes</span>
+          </div>
+          <div class="prob-item"><span class="prob-icon">💰</span><span>Upfront transparent pricing, zero
+              surprises</span></div>
+          <div class="prob-item"><span class="prob-icon">📍</span><span>Live GPS tracking, real-time ETA updates</span>
+          </div>
+          <div class="prob-item"><span class="prob-icon">🧾</span><span>GST invoice + 30-day service warranty</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 3 – HOW IT WORKS
+================================================ -->
+  <section id="howitworks">
+    <div class="hiw-header">
+      <span class="section-badge" style="display:inline-block;">⚙️ Process</span>
+      <h2 class="section-h2" style="text-align:center;margin-top:.5rem;">How It Works</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <span class="step-num">01</span>
+        <span class="step-icon">🔧</span>
+        <h3 class="step-title">Pick Your Service</h3>
+        <p class="step-desc">Choose from AC Repair, Refrigerator, Washing Machine, Plumbing, Electrical, or Geyser.</p>
+        <span class="step-tag">30 Seconds</span>
+      </div>
+      <div class="step-card">
+        <span class="step-num">02</span>
+        <span class="step-icon">📍</span>
+        <h3 class="step-title">Enter Location & Time</h3>
+        <p class="step-desc">Drop your address and pick a time slot – morning, afternoon, or evening.</p>
+        <span class="step-tag">1 Minute</span>
+      </div>
+      <div class="step-card">
+        <span class="step-num">03</span>
+        <span class="step-icon">👷</span>
+        <h3 class="step-title">Matched Instantly</h3>
+        <p class="step-desc">Nearest verified technician matched to your issue. Full profile, rating, and ETA shown
+          upfront.</p>
+        <span class="step-tag">Instant Match</span>
+      </div>
+      <div class="step-card">
+        <span class="step-num">04</span>
+        <span class="step-icon">📱</span>
+        <h3 class="step-title">Track & Pay</h3>
+        <p class="step-desc">Live GPS tracking. Pay via UPI, card, or wallet. Instant GST invoice generated
+          automatically.</p>
+        <span class="step-tag">Seamless</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 4 – BOOK A REPAIR (LIVE FORM)
+     ✅ Category: AC Repair, Refrigerator, Washing Machine, Plumbing, Electrical, Geyser
+     ✅ Location / Address input
+     ✅ Date + Time Slot (Morning / Afternoon / Evening)
+     ✅ Issue description
+     ✅ localStorage: [{id,category,location,datetime,description,technicianName,status,timestamp,amount}]
+     ✅ Booking ID: RB-0001 format
+     ✅ Technician card + Invoice preview on submit
+================================================ -->
+  <section id="booking">
+    <div style="text-align:center;margin-bottom:4rem;">
+      <span class="section-badge" style="display:inline-block;">🛠️ Live Prototype</span>
+      <h2 class="section-h2" style="margin-top:.5rem;">Book a <span style="color:var(--orange)">Repair</span></h2>
+      <p
+        style="font-family:'Satoshi',sans-serif;font-size:1rem;color:var(--muted);margin-top:1rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;">
+        Fully functional – data saves to your browser. Submit to see technician match and invoice live.
+      </p>
+    </div>
+
+    <div class="booking-inner" style="max-width:1100px;margin:0 auto;">
+
+      <!-- LEFT: FORM -->
+      <div class="booking-left">
+        <div class="booking-form-card" id="booking-form-card">
+          <div id="bform-fields">
+
+            <!-- CATEGORY -->
+            <div class="form-group">
+              <label class="form-lbl">Service Category <span class="req">*</span></label>
+              <div class="cat-pills">
+                <button type="button" class="cat-pill" data-cat="AC Repair" onclick="selCat(this)">❄️ AC Repair</button>
+                <button type="button" class="cat-pill" data-cat="Refrigerator" onclick="selCat(this)">🧊
+                  Refrigerator</button>
+                <button type="button" class="cat-pill" data-cat="Washing Machine" onclick="selCat(this)">🫧 Washing
+                  Machine</button>
+                <button type="button" class="cat-pill" data-cat="Plumbing" onclick="selCat(this)">🔩 Plumbing</button>
+                <button type="button" class="cat-pill" data-cat="Electrical" onclick="selCat(this)">⚡
+                  Electrical</button>
+                <button type="button" class="cat-pill" data-cat="Geyser" onclick="selCat(this)">🔥 Geyser</button>
+              </div>
+              <select class="form-select" id="f-category" required style="margin-top:.5rem;">
+                <option value="" disabled selected>– Select service category –</option>
+                <option value="AC Repair">AC Repair</option>
+                <option value="Refrigerator">Refrigerator</option>
+                <option value="Washing Machine">Washing Machine</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Electrical">Electrical</option>
+                <option value="Geyser">Geyser</option>
+              </select>
+            </div>
+
+            <!-- LOCATION -->
+            <div class="form-group">
+              <label class="form-lbl" for="f-location">Location / Address <span class="req">*</span></label>
+              <input type="text" class="form-input" id="f-location"
+                placeholder="e.g. Flat 302, Sunrise Society, Andheri West, Mumbai..." required autocomplete="off">
+            </div>
+
+            <!-- DATE + TIME SLOT -->
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-lbl" for="f-date">Preferred Date <span class="req">*</span></label>
+                <input type="date" class="form-input" id="f-date" required>
+              </div>
+              <div class="form-group">
+                <label class="form-lbl">Time Slot <span class="req">*</span></label>
+                <div class="time-slots">
+                  <button type="button" class="time-slot" data-slot="Morning" onclick="selSlot(this)">
+                    <span class="slot-icon">🌅</span>Morning<br><small
+                      style="font-size:.62rem;opacity:.6;">8am–12pm</small>
+                  </button>
+                  <button type="button" class="time-slot" data-slot="Afternoon" onclick="selSlot(this)">
+                    <span class="slot-icon">☀️</span>Afternoon<br><small
+                      style="font-size:.62rem;opacity:.6;">12pm–5pm</small>
+                  </button>
+                  <button type="button" class="time-slot" data-slot="Evening" onclick="selSlot(this)">
+                    <span class="slot-icon">🌆</span>Evening<br><small
+                      style="font-size:.62rem;opacity:.6;">5pm–9pm</small>
+                  </button>
+                </div>
+                <input type="hidden" id="f-timeslot">
+              </div>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="form-group">
+              <label class="form-lbl" for="f-description">Issue Description <span class="req">*</span></label>
+              <textarea class="form-textarea" id="f-description"
+                placeholder="Briefly describe the problem – what's happening, since when, any error codes..." required
+                maxlength="500"></textarea>
+              <div style="text-align:right;font-size:.68rem;color:var(--muted);margin-top:.3rem;">
+                <span id="desc-count">0</span>/500
+              </div>
+            </div>
+
+            <!-- SUBMIT -->
+            <button type="button" class="form-submit" id="form-submit-btn" onclick="submitBooking(event)">
+              🔧 &nbsp; Confirm Booking
+            </button>
+          </div>
+
+          <!-- SUCCESS STATE -->
+          <div id="bform-success" style="display:none;text-align:center;padding:2rem;">
+            <div style="font-size:3.5rem;margin-bottom:1rem;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) forwards;">
+              ✅</div>
+            <h3
+              style="font-family:'Clash Display',sans-serif;font-size:1.8rem;color:var(--success);margin-bottom:.5rem;">
+              Booking Confirmed!</h3>
+            <p style="font-family:'Satoshi',sans-serif;color:var(--muted);font-size:.9rem;line-height:1.6;">Your
+              technician has been matched and is on the way.</p>
+            <button type="button" onclick="resetBookingForm()"
+              style="margin-top:1.5rem;padding:.7rem 1.8rem;background:transparent;border:1px solid var(--orange);color:var(--orange);border-radius:8px;font-size:.85rem;font-weight:600;cursor:none;font-family:'Satoshi',sans-serif;">
+              + Book Another Repair
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: TECHNICIAN + INVOICE -->
+      <div class="booking-right" id="booking-right">
+        <div class="booking-right-placeholder" id="bright-placeholder">
+          <span class="placeholder-icon">👷</span>
+          <h3 style="font-family:'Satoshi',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text);">Awaiting Your
+            Booking</h3>
+          <p class="placeholder-text">Submit the form to instantly see your matched technician and invoice preview.</p>
+        </div>
+
+        <!-- TECHNICIAN CARD -->
+        <div class="tech-card" id="tech-card">
+          <div class="tech-matched-badge">Technician Matched</div>
+          <div class="tech-main">
+            <div class="tech-avatar" id="tech-avatar">👷</div>
+            <div class="tech-info">
+              <h3 id="tech-name">–</h3>
+              <div class="stars" id="tech-stars">★★★★★</div>
+              <div class="verified">✅ Verified</div>
+            </div>
+          </div>
+          <div class="tech-stats">
+            <div class="tech-stat">
+              <div class="ts-val" style="color:var(--orange);" id="tech-rating">4.9</div>
+              <div class="ts-lbl">Rating</div>
+            </div>
+            <div class="tech-stat">
+              <div class="ts-val" style="color:var(--blue);" id="tech-jobs">0</div>
+              <div class="ts-lbl">Jobs Done</div>
+            </div>
+            <div class="tech-stat">
+              <div class="ts-val" style="color:var(--success);">9yr</div>
+              <div class="ts-lbl">Experience</div>
+            </div>
+          </div>
+          <div class="eta-countdown" id="eta-countdown">25:00</div>
+          <div class="eta-label">⏱ Estimated Arrival Time (minutes)</div>
+        </div>
+
+        <!-- INVOICE PREVIEW -->
+        <div class="invoice-card" id="invoice-card">
+          <div class="invoice-header">
+            <div>
+              <div class="invoice-title">🧾 Invoice Preview</div>
+              <div style="font-size:.72rem;color:var(--muted);font-family:'Satoshi',sans-serif;margin-top:.2rem;">GST
+                Invoice</div>
+            </div>
+            <div class="invoice-id" id="inv-id">RB-0001</div>
+          </div>
+          <div class="invoice-row"><span class="lbl">Service</span><span class="val" id="inv-service">–</span></div>
+          <div class="invoice-row"><span class="lbl">Location</span><span class="val" id="inv-location"
+              style="max-width:200px;text-align:right;font-size:.8rem;">–</span></div>
+          <div class="invoice-row"><span class="lbl">Date & Slot</span><span class="val" id="inv-datetime">–</span>
+          </div>
+          <div class="invoice-row"><span class="lbl">Technician</span><span class="val" id="inv-tech">–</span></div>
+          <div class="invoice-row"><span class="lbl">Service Fee</span><span class="val" id="inv-base">–</span></div>
+          <div class="invoice-row"><span class="lbl">GST (18%)</span><span class="val" id="inv-gst">–</span></div>
+          <div class="invoice-total">
+            <div class="amount" id="inv-total">₹0</div>
+            <div class="tax">Total including GST</div>
+          </div>
+          <div class="payment-badges">
+            <span class="pay-badge">💳 Card</span>
+            <span class="pay-badge">📱 UPI</span>
+            <span class="pay-badge">💛 Wallet</span>
+            <span class="pay-badge">💵 Cash</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 5 – LIVE DASHBOARD
+     ✅ Reads localStorage, status badges, update cycling
+================================================ -->
+  <section id="dashboard">
+    <div class="dash-header">
+      <span class="section-badge" style="display:inline-block;">📡 Live Command Center</span>
+      <h2 class="section-h2" style="text-align:center;margin-top:.5rem;">Bookings <span
+          style="color:var(--blue)">Dashboard</span></h2>
+      <p style="font-family:'Satoshi',sans-serif;font-size:.95rem;color:var(--muted);margin-top:.8rem;">All submitted
+        bookings, real-time status, one-click updates.</p>
+    </div>
+
+    <div class="dash-summary" id="dash-summary">
+      <div class="dsummary-card">
+        <div class="dsummary-num" id="ds-total" style="color:var(--text);">0</div>
+        <div class="dsummary-lbl">Total</div>
+      </div>
+      <div class="dsummary-card">
+        <div class="dsummary-num" id="ds-pending" style="color:var(--error);">0</div>
+        <div class="dsummary-lbl">Pending</div>
+      </div>
+      <div class="dsummary-card">
+        <div class="dsummary-num" id="ds-progress" style="color:var(--orange);">0</div>
+        <div class="dsummary-lbl">In Progress</div>
+      </div>
+      <div class="dsummary-card">
+        <div class="dsummary-num" id="ds-resolved" style="color:var(--success);">0</div>
+        <div class="dsummary-lbl">Resolved</div>
+      </div>
+    </div>
+
+    <div class="dash-topbar">
+      <div class="dash-search">
+        <span>🔍</span>
+        <input type="text" id="dash-search-input" placeholder="Search bookings..." oninput="filterBookings()">
+      </div>
+      <div class="dash-stats-row">
+        <button class="dash-stat-pill dsp-all active" onclick="setFilter('all',this)">All</button>
+        <button class="dash-stat-pill dsp-pend" onclick="setFilter('Pending',this)">Pending</button>
+        <button class="dash-stat-pill dsp-prog" onclick="setFilter('In Progress',this)">In Progress</button>
+        <button class="dash-stat-pill dsp-res" onclick="setFilter('Resolved',this)">Resolved</button>
+      </div>
+    </div>
+
+    <div class="bookings-grid" id="bookings-grid"></div>
+  </section>
+
+  <!-- ================================================
+     SECTION 6 – LIVE TRACKING
+================================================ -->
+  <section id="tracking">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <span class="section-badge" style="display:inline-block;">📍 Live Feature</span>
+      <h2 class="section-h2" style="margin-top:.5rem;">Track Your <span style="color:var(--blue)">Technician</span></h2>
+    </div>
+    <div class="tracking-inner">
+      <canvas id="tracking-canvas" width="700" height="420"></canvas>
+      <div class="tracking-side">
+        <div class="tracking-status-bar">
+          <div class="tsb-text">🟢 Technician En Route</div>
+          <div class="tsb-eta" id="track-eta">12:34</div>
+          <div class="tsb-lbl">minutes away</div>
+        </div>
+        <div class="tech-main" style="margin-bottom:1rem;">
+          <div class="tech-avatar">🧑‍🔧</div>
+          <div class="tech-info">
+            <h3 style="font-size:1rem;" id="track-tech-name">Suresh Patel</h3>
+            <div class="stars">★★★★★</div>
+            <div class="verified">✅ ID Verified</div>
+          </div>
+        </div>
+        <div class="track-progress">
+          <div class="track-progress-bar"></div>
+        </div>
+        <div
+          style="font-size:.72rem;color:var(--muted);font-family:'Satoshi',sans-serif;margin-bottom:1.5rem;text-align:center;">
+          Route progress to your location</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+          <div class="tech-stat">
+            <div class="ts-val" style="color:var(--blue);">2.3</div>
+            <div class="ts-lbl">km away</div>
+          </div>
+          <div class="tech-stat">
+            <div class="ts-val" style="color:var(--success);">4.9</div>
+            <div class="ts-lbl">Rating</div>
+          </div>
+          <div class="tech-stat">
+            <div class="ts-val" style="color:var(--orange);">UPI</div>
+            <div class="ts-lbl">Preferred Pay</div>
+          </div>
+          <div class="tech-stat">
+            <div class="ts-val" style="color:var(--amber);">9yr</div>
+            <div class="ts-lbl">Experience</div>
+          </div>
+        </div>
+        <div
+          style="margin-top:1.5rem;padding:1rem;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;text-align:center;">
+          <div style="font-size:.78rem;font-family:'Satoshi',sans-serif;color:var(--success);font-weight:600;">📞
+            One-tap call available</div>
+          <div style="font-size:.72rem;color:var(--muted);font-family:'Satoshi',sans-serif;margin-top:.3rem;">Technician
+            can see your location</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 7 – SERVICES
+================================================ -->
+  <section id="services">
+    <div style="text-align:center;margin-bottom:1rem;">
+      <span class="section-badge" style="display:inline-block;">🛠️ Coverage</span>
+      <h2 class="section-h2" style="text-align:center;margin-top:.5rem;">Services We <span
+          style="color:var(--orange)">Cover</span></h2>
+      <p style="font-family:'Satoshi',sans-serif;font-size:.95rem;color:var(--muted);margin-top:1rem;">Hover a card to
+        see most common issues</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-card-inner">
+          <div class="sc-front"><span class="sc-icon">❄️</span>
+            <div>
+              <div class="sc-name">AC Repair</div>
+              <div class="sc-info"><span class="sc-price">From ₹299</span><span class="sc-time">⏱ Avg 1.5hr</span></div>
+            </div>
+          </div>
+          <div class="sc-back">
+            <h4>Common Issues</h4>
+            <ul>
+              <li>Not cooling / gas refill</li>
+              <li>Compressor not working</li>
+              <li>Water leaking from unit</li>
+              <li>Remote / sensor issue</li>
+              <li>Unusual noise or smell</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-inner">
+          <div class="sc-front"><span class="sc-icon">🧊</span>
+            <div>
+              <div class="sc-name">Refrigerator</div>
+              <div class="sc-info"><span class="sc-price">From ₹249</span><span class="sc-time">⏱ Avg 1hr</span></div>
+            </div>
+          </div>
+          <div class="sc-back">
+            <h4>Common Issues</h4>
+            <ul>
+              <li>Not cooling properly</li>
+              <li>Ice maker malfunction</li>
+              <li>Water dispenser broken</li>
+              <li>Door seal / gasket worn</li>
+              <li>Compressor noise</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-inner">
+          <div class="sc-front"><span class="sc-icon">🫧</span>
+            <div>
+              <div class="sc-name">Washing Machine</div>
+              <div class="sc-info"><span class="sc-price">From ₹349</span><span class="sc-time">⏱ Avg 1.5hr</span></div>
+            </div>
+          </div>
+          <div class="sc-back">
+            <h4>Common Issues</h4>
+            <ul>
+              <li>Not spinning / draining</li>
+              <li>Drum making noise</li>
+              <li>Water leaking</li>
+              <li>Error codes / board issue</li>
+              <li>Inlet valve repair</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-inner">
+          <div class="sc-front"><span class="sc-icon">🔩</span>
+            <div>
+              <div class="sc-name">Plumbing</div>
+              <div class="sc-info"><span class="sc-price">From ₹199</span><span class="sc-time">⏱ Avg 45min</span></div>
+            </div>
+          </div>
+          <div class="sc-back">
+            <h4>Common Issues</h4>
+            <ul>
+              <li>Pipe leakage / burst</li>
+              <li>Clogged drain / sink</li>
+              <li>Tap / faucet repair</li>
+              <li>Toilet flush issue</li>
+              <li>Water pressure problem</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-inner">
+          <div class="sc-front"><span class="sc-icon">⚡</span>
+            <div>
+              <div class="sc-name">Electrical</div>
+              <div class="sc-info"><span class="sc-price">From ₹249</span><span class="sc-time">⏱ Avg 1hr</span></div>
+            </div>
+          </div>
+          <div class="sc-back">
+            <h4>Common Issues</h4>
+            <ul>
+              <li>Short circuit / tripping</li>
+              <li>Fan / switch not working</li>
+              <li>Socket / wiring repair</li>
+              <li>MCB / fuse replacement</li>
+              <li>New point installation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-card-inner">
+          <div class="sc-front"><span class="sc-icon">🔥</span>
+            <div>
+              <div class="sc-name">Geyser</div>
+              <div class="sc-info"><span class="sc-price">From ₹279</span><span class="sc-time">⏱ Avg 1hr</span></div>
+            </div>
+          </div>
+          <div class="sc-back">
+            <h4>Common Issues</h4>
+            <ul>
+              <li>Not heating water</li>
+              <li>Water leaking from body</li>
+              <li>Thermostat replacement</li>
+              <li>Heating element burnt</li>
+              <li>Pilot light issue (gas)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 8 – WHY CHOOSE
+================================================ -->
+  <section id="why">
+    <div style="text-align:center;margin-bottom:1rem;">
+      <span class="section-badge" style="display:inline-block;">🏆 Trust Signals</span>
+      <h2 class="section-h2" style="text-align:center;margin-top:.5rem;">Why <span style="color:var(--orange)">Repair
+          Buddy?</span></h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card"><span class="why-icon">🛡️</span>
+        <h3 class="why-title">Verified Technicians</h3>
+        <p class="why-desc">Every technician passes ID verification, skill assessment, and background checks.</p><span
+          class="why-badge">Trust First</span>
+      </div>
+      <div class="why-card"><span class="why-icon">📍</span>
+        <h3 class="why-title">Live GPS Tracking</h3>
+        <p class="why-desc">Real-time location from dispatch to arrival. Know exactly where your technician is.</p><span
+          class="why-badge">Real-time</span>
+      </div>
+      <div class="why-card"><span class="why-icon">₹</span>
+        <h3 class="why-title">Upfront Pricing</h3>
+        <p class="why-desc">See the exact price before confirming. Zero hidden charges, zero surprise bills.</p><span
+          class="why-badge">Transparent</span>
+      </div>
+      <div class="why-card"><span class="why-icon">🧾</span>
+        <h3 class="why-title">GST Invoice</h3>
+        <p class="why-desc">Instant digital GST invoice after every service. Claim tax benefits easily.</p><span
+          class="why-badge">Compliant</span>
+      </div>
+      <div class="why-card"><span class="why-icon">💳</span>
+        <h3 class="why-title">All Payment Methods</h3>
+        <p class="why-desc">Pay via UPI, card, net banking, wallet, or cash – powered by Razorpay.</p><span
+          class="why-badge">Razorpay Secured</span>
+      </div>
+      <div class="why-card"><span class="why-icon">🔒</span>
+        <h3 class="why-title">30-Day Warranty</h3>
+        <p class="why-desc">Every repair backed by a 30-day warranty. Issue returns? We fix it free.</p><span
+          class="why-badge">Guaranteed</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 9 – IMPACT / STATS
+================================================ -->
+  <section id="impact">
+    <div style="text-align:center;margin-bottom:1rem;">
+      <span class="section-badge" style="display:inline-block;">📈 Numbers</span>
+      <h2 class="section-h2" style="text-align:center;margin-top:.5rem;">Real <span
+          style="color:var(--success)">Impact</span></h2>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num" style="color:var(--orange);"><span class="ic" data-t="10000">0</span><span
+            style="font-size:2rem;">+</span></div>
+        <div class="impact-desc">Repairs Completed Across India</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num" style="color:var(--blue);"><span class="ic" data-t="500">0</span><span
+            style="font-size:2rem;">+</span></div>
+        <div class="impact-desc">Verified Technicians Network</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num" style="color:var(--amber);"><span class="ic" data-t="49" data-div="10">0</span><span
+            style="font-size:2rem;">★</span></div>
+        <div class="impact-desc">Average Customer Rating</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num" style="color:var(--success);"><span class="ic" data-t="28">0</span><span
+            style="font-size:2rem;">min</span></div>
+        <div class="impact-desc">Average Response Time</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num" style="color:var(--error);"><span class="ic" data-t="15">0</span><span
+            style="font-size:2rem;">+</span></div>
+        <div class="impact-desc">Cities Served Nationwide</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num" style="color:var(--success);"><span class="ic" data-t="98">0</span><span
+            style="font-size:2rem;">%</span></div>
+        <div class="impact-desc">Customer Satisfaction Rate</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 10 – REVIEWS MARQUEE
+================================================ -->
+  <section id="reviews">
+    <div class="reviews-header">
+      <span class="section-badge" style="display:inline-block;">💬 Real Stories</span>
+      <h2 class="section-h2" style="text-align:center;margin-top:.5rem;">What Customers <span
+          style="color:var(--orange)">Say</span></h2>
+    </div>
+    <div class="marquee-wrap">
+      <div class="marquee-track">
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar">😊</div>
+            <div>
+              <div class="rv-name">Priya Sharma</div>
+              <div class="rv-city">Mumbai, Maharashtra</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"My AC stopped working at 2am in peak summer. Repair Buddy had a technician at my door by
+            8am. Transparent pricing, exactly what was quoted. 10/10!"</p><span class="rv-service">AC Repair</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,var(--blue),var(--success))">👨</div>
+            <div>
+              <div class="rv-name">Rahul Verma</div>
+              <div class="rv-city">Pune, Maharashtra</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"Refrigerator stopped cooling on a Sunday. Called Repair Buddy, technician arrived in 22
+            minutes – I was shocked! Fixed the compressor upfront. Excellent."</p><span
+            class="rv-service">Refrigerator</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,var(--success),var(--blue))">👩</div>
+            <div>
+              <div class="rv-name">Anita Patel</div>
+              <div class="rv-city">Ahmedabad, Gujarat</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"Water pipe burst in the kitchen! Repair Buddy had a plumber in 18 minutes. He fixed
+            everything with a 30-day warranty. Saved our floors!"</p><span class="rv-service">Plumbing</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,var(--amber),var(--orange))">🧑</div>
+            <div>
+              <div class="rv-name">Sanjay Mehta</div>
+              <div class="rv-city">Bengaluru, Karnataka</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★☆</div>
+          <p class="rv-text">"Washing machine drum making terrible noise. Booked Repair Buddy, got technician with live
+            ETA. Diagnosed and fixed in under an hour. Highly recommend!"</p><span class="rv-service">Washing
+            Machine</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,#A78BFA,var(--blue))">👩‍💼</div>
+            <div>
+              <div class="rv-name">Kavitha Nair</div>
+              <div class="rv-city">Chennai, Tamil Nadu</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"Geyser stopped working in December. Repair Buddy connected me with an electrician who
+            fixed it and found a dangerous wiring issue. Absolute lifesaver!"</p><span class="rv-service">Geyser</span>
+        </div>
+        <!-- Duplicates for seamless infinite loop -->
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar">😊</div>
+            <div>
+              <div class="rv-name">Priya Sharma</div>
+              <div class="rv-city">Mumbai, Maharashtra</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"My AC stopped working at 2am in peak summer. Repair Buddy had a technician at my door by
+            8am. Transparent pricing, exactly what was quoted. 10/10!"</p><span class="rv-service">AC Repair</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,var(--blue),var(--success))">👨</div>
+            <div>
+              <div class="rv-name">Rahul Verma</div>
+              <div class="rv-city">Pune, Maharashtra</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"Refrigerator stopped cooling on a Sunday. Called Repair Buddy, technician arrived in 22
+            minutes – I was shocked! Fixed the compressor upfront. Excellent."</p><span
+            class="rv-service">Refrigerator</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,var(--success),var(--blue))">👩</div>
+            <div>
+              <div class="rv-name">Anita Patel</div>
+              <div class="rv-city">Ahmedabad, Gujarat</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"Water pipe burst in the kitchen! Repair Buddy had a plumber in 18 minutes. He fixed
+            everything with a 30-day warranty. Saved our floors!"</p><span class="rv-service">Plumbing</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,var(--amber),var(--orange))">🧑</div>
+            <div>
+              <div class="rv-name">Sanjay Mehta</div>
+              <div class="rv-city">Bengaluru, Karnataka</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★☆</div>
+          <p class="rv-text">"Washing machine drum making terrible noise. Booked Repair Buddy, got technician with live
+            ETA. Diagnosed and fixed in under an hour. Highly recommend!"</p><span class="rv-service">Washing
+            Machine</span>
+        </div>
+        <div class="review-card">
+          <div class="rv-top">
+            <div class="rv-avatar" style="background:linear-gradient(135deg,#A78BFA,var(--blue))">👩‍💼</div>
+            <div>
+              <div class="rv-name">Kavitha Nair</div>
+              <div class="rv-city">Chennai, Tamil Nadu</div>
+            </div>
+          </div>
+          <div class="rv-stars">★★★★★</div>
+          <p class="rv-text">"Geyser stopped working in December. Repair Buddy connected me with an electrician who
+            fixed it and found a dangerous wiring issue. Absolute lifesaver!"</p><span class="rv-service">Geyser</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+     SECTION 11 – OUTRO / CTA
+================================================ -->
+  <section id="outro">
+    <h2 class="outro-h2">Ready to <span style="color:var(--orange)">Fix</span><br>Your Home?</h2>
+    <p class="outro-sub">Expert technicians. Transparent pricing. At your door in 30 minutes or less.</p>
+    <div class="outro-btns">
+      <button type="button" class="btn-orange" onclick="navScrollTo('#booking')">🔧 Book Your First Repair</button>
+      <button type="button" class="btn-outline">👷 Become a Technician</button>
+      <button type="button" onclick="navScrollTo('#booking')"
+        style="padding:.95rem 2.4rem;background:transparent;color:rgba(248,250,252,.55);border:1px solid rgba(255,255,255,.15);border-radius:8px;font-size:.95rem;font-weight:600;cursor:none;transition:all .2s;font-family:'Satoshi',sans-serif;">
+        🔍 Try the Prototype
+      </button>
+    </div>
+    <div class="trust-badges">
+      <span class="trust-badge">🔐 Razorpay Secured</span>
+      <span class="trust-badge">✅ Google Verified</span>
+      <span class="trust-badge">📋 ISO 9001 Certified</span>
+      <span class="trust-badge">🏠 Serving 15+ Cities</span>
+      <span class="trust-badge">⭐ 4.9 Rating</span>
+    </div>
+    <div class="watermark">
+      Repair Buddy &nbsp;•&nbsp; Built by Team CODE IT &nbsp;•&nbsp; Powered by urgency &amp; expertise
+    </div>
+  </section>
+
+  <!-- YOUR JAVASCRIPT (loaded last so DOM is ready) -->
+  <script src="script.js"></script>
+
+</body>
+
+</html>
